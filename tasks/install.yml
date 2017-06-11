@@ -1,0 +1,47 @@
+---
+
+- name: add apt-key
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: FDA5DFFC
+  become: yes
+
+- name: add apt-repo
+  apt_repository:
+    repo: deb http://apt.sonarr.tv/ master main
+    state: present
+  become: yes
+
+- name: install nzbdrone
+  apt:
+    name: nzbdrone
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  become: yes
+  notify: restart_sonarr
+
+- name: check for systemd
+  command: systemctl --version
+  register: sonarr_systemctl_version
+  ignore_errors: yes
+
+- name: Add sonarr.service
+  template:
+    src: sonarr.service.ini
+    dest: /lib/systemd/system/sonarr.service
+    mode: 0644
+  become: yes
+  when: sonarr_systemctl_version.rc == 0
+  notify:
+    - sonarr_reload_systemd
+    - restart_sonarr
+
+- name: Add sonarr.init
+  template:
+    src: sonarr.init.sh
+    dest: /etc/init.d/sonarr
+    mode: "a+x"
+  become: yes
+  when: sonarr_systemctl_version.rc != 0
+  notify: restart_sonarr
