@@ -14,6 +14,7 @@
     repo: deb http://download.mono-project.com/repo/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} main
     state: present
   become: yes
+  when: ansible_distribution_release != 'stretch'
 
 - name: add sonarr apt-repo
   apt_repository:
