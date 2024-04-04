@@ -1,20 +1,19 @@
 ---
 
 galaxy_info:
-  author: Gunter Grodotzki
-  description: Installs Sonarr
-  company: weheartwebsites UG
+  role_name: sonarr
+  namespace: lifeofguenter
+  author: Günter Grodotzki
+  description: Compiles and configures Sonarr on Debian-like systems.
   license: MIT
-  min_ansible_version: 2.3
+  min_ansible_version: '2.10'
   platforms:
   - name: Ubuntu
     versions:
-    - xenial
-    - trusty
+      - jammy
   - name: Debian
     versions:
-    - jessie
-    - wheezy
+      - bookworm
   galaxy_tags:
     - system
     - htpc

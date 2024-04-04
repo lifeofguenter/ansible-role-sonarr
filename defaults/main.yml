@@ -1,3 +1,5 @@
 ---
 
 sonarr_user: sonarr
+
+sonarr_version: '4.0.3.1413'
