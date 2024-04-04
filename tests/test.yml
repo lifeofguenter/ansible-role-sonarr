@@ -1,6 +1,10 @@
 ---
 
 - hosts: localhost
-  remote_user: root
-  roles:
-    - ansible-role-sonarr
+
+  vars:
+    sonarr_user: root
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: project

@@ -1,57 +1,26 @@
 ---
 
-- name: add apt-keys
-  apt_key:
-    keyserver: keyserver.ubuntu.com
-    id: "{{ item }}"
-  with_items:
-    - FDA5DFFC
-    - 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-  become: yes
-
-- name: add mono apt-repo
-  apt_repository:
-    repo: deb http://download.mono-project.com/repo/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} main
-    state: present
-  become: yes
-  when: ansible_distribution_release != 'stretch'
-
-- name: add sonarr apt-repo
-  apt_repository:
-    repo: deb http://apt.sonarr.tv/ master main
-    state: present
-  become: yes
-
-- name: install nzbdrone
-  apt:
-    name: nzbdrone
-    state: present
-    update_cache: yes
+- name: Install dependencies
+  ansible.builtin.apt:
+    name:
+      - sqlite3
+    update_cache: true
     cache_valid_time: 3600
-  become: yes
-  notify: restart_sonarr
+  become: true
 
-- name: check for systemd
-  command: systemctl --version
-  register: sonarr_systemctl_version
-  ignore_errors: yes
+- name: Get source code
+  ansible.builtin.unarchive:
+    src: https://github.com/Sonarr/Sonarr/releases/download/v{{ sonarr_version }}/Sonarr.main.{{ sonarr_version }}.linux-x64.tar.gz
+    dest: /opt
+    remote_src: true
+  become: true
 
-- name: add sonarr.service
-  template:
-    src: sonarr.service.ini
-    dest: /lib/systemd/system/sonarr.service
-    mode: 0644
-  become: yes
-  when: sonarr_systemctl_version.rc == 0
+- name: Add sonarr.service
+  ansible.builtin.template:
+    src: sonarr.service
+    dest: /etc/systemd/system/sonarr.service
+    mode: '0644'
+  become: true
   notify:
-    - sonarr_reload_systemd
-    - restart_sonarr
-
-- name: add sonarr.init
-  template:
-    src: sonarr.init.sh
-    dest: /etc/init.d/sonarr
-    mode: "a+x"
-  become: yes
-  when: sonarr_systemctl_version.rc != 0
-  notify: restart_sonarr
+    - Sonarr_reload_systemd
+    - Restart_sonarr

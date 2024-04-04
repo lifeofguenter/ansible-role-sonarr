@@ -1,0 +1,19 @@
+---
+
+- name: Create sonarr user
+  ansible.builtin.user:
+    name: '{{ sonarr_user }}'
+    shell: /usr/sbin/nologin
+    create_home: false
+    system: true
+  become: true
+  when: sonarr_user != 'root'
+
+- name: Create /var/lib/sonarr folder
+  ansible.builtin.file:
+    path: /var/lib/sonarr
+    state: directory
+    mode: '0755'
+    owner: '{{ sonarr_user }}'
+    group: '{{ sonarr_user }}'
+  become: true

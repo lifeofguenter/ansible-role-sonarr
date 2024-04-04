@@ -1,12 +1,13 @@
 ---
 
-- name: sonarr_reload_systemd
-  command: systemctl daemon-reload
-  become: yes
+- name: Sonarr_reload_systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
 
-- name: restart_sonarr
-  service:
+- name: Restart_sonarr
+  ansible.builtin.systemd:
     name: sonarr
     state: restarted
-    enabled: yes
-  become: yes
+    enabled: true
+  become: true
