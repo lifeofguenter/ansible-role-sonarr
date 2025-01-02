@@ -1,4 +1,4 @@
-# Ansible Role: Sonarr
+# lifeofguenter.sonarr
 
 An Ansible role that installs Sonarr on Debian like systems.
 
